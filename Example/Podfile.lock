@@ -1,0 +1,22 @@
+PODS:
+  - Reveal-iOS-SDK (1.5.1)
+  - Swiftly (0.0.2)
+  - Transitional (0.0.1)
+
+DEPENDENCIES:
+  - Reveal-iOS-SDK
+  - Swiftly (from `../../Swiftly/`)
+  - Transitional (from `../`)
+
+EXTERNAL SOURCES:
+  Swiftly:
+    :path: ../../Swiftly/
+  Transitional:
+    :path: ../
+
+SPEC CHECKSUMS:
+  Reveal-iOS-SDK: c9c55cad2729c85f6ced415f1b21857c9a2d8ef9
+  Swiftly: e8910f7d4cabba4c3615267f811b8061751872da
+  Transitional: ee1b9cd6141624728564be79aa6d9caf1b6b945b
+
+COCOAPODS: 0.39.0.beta.5
