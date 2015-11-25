@@ -11,7 +11,7 @@
 		D8093AC51AB6551800282415 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8093AC41AB6551800282415 /* AppDelegate.swift */; };
 		D8093ACC1AB6551800282415 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D8093ACB1AB6551800282415 /* Images.xcassets */; };
 		D8093ACF1AB6551800282415 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = D8093ACD1AB6551800282415 /* LaunchScreen.xib */; };
-		E0273325409007FE1FD4CDF7 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BEA3A014976F265BB0DE9865 /* Pods.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		E0273325409007FE1FD4CDF7 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BEA3A014976F265BB0DE9865 /* Pods.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */

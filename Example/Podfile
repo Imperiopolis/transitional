@@ -3,4 +3,4 @@ use_frameworks!
 
 pod 'Reveal-iOS-SDK', configurations: ['Debug']
 pod 'Transitional', :path => '../'
-pod 'Swiftly', :path => '../../Swiftly/'
+pod 'Swiftly', :head
