@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "Transitional"
-  s.version          = "0.0.1"
+  s.version          = "0.0.2"
   s.summary          = "Quick and easy custom transitions."
   s.homepage         = "https://github.com/imperiopolis/Transitional"
   s.license          = 'MIT'

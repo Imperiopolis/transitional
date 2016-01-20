@@ -11,14 +11,20 @@ import UIKit
 @objc public enum TransitionalAnimationStyle: Int, Equatable, CustomStringConvertible {
     case SlideDown
     case SlideUp
+    case FlipFromLeft
+    case FlipFromRight
     case Custom
-    
+
     public var description: String {
         switch self {
         case .SlideDown:
             return "Slide Down"
         case .SlideUp:
             return "Slide Up"
+        case .FlipFromLeft:
+            return "Flip From Left"
+        case .FlipFromRight:
+            return "Flip From Right"
         case .Custom:
             return "Custom"
         }
@@ -319,19 +325,79 @@ public class Transition: NSObject {
     }
     
     private func animation() {
+        switch style {
+        case .SlideDown:
+            fallthrough
+        case .SlideUp:
+            slide()
+        case .FlipFromLeft:
+            fallthrough
+        case .FlipFromRight:
+            flip()
+        default:
+            break
+        }
+    }
+
+    private func flip() {
         if let fromVC = fromViewController,
             toVC = toViewController,
             bottomVC = bottomViewController,
             topVC = topViewController,
             container = containerView {
-            
+
+                container.addSubview(bottomVC.view)
+
+                // If this a modal presentation, we need to `flush` before the animation
+                // otherwise the presented viewController will not animate correctly.
+                // This sometimes causes a slight animation delay, so I need to find a better
+                // way to deal with this behavior.
+                if presenting && navController == nil {
+                    CATransaction.flush()
+                }
+
+                container.addSubview(topVC.view)
+
+                let options: UIViewAnimationOptions
+
+                switch style {
+                case .FlipFromRight:
+                    options = .TransitionFlipFromRight
+                case .FlipFromLeft:
+                    options = .TransitionFlipFromLeft
+                default:
+                    fatalError("Only flip styles support this flip animation. This path should never be hit.")
+                }
+
+                UIView.transitionFromView(fromVC.view, toView: toVC.view, duration: duration, options: options) { _ in
+
+                    let cancelled = self.context?.transitionWasCancelled() ?? true
+
+                    if cancelled {
+                        toVC.view.removeFromSuperview()
+                    } else {
+                        fromVC.view.removeFromSuperview()
+                    }
+
+                    self.context?.completeTransition(!cancelled)
+                }
+        }
+    }
+
+    private func slide() {
+        if let fromVC = fromViewController,
+            toVC = toViewController,
+            bottomVC = bottomViewController,
+            topVC = topViewController,
+            container = containerView {
+
                 container.addSubview(bottomVC.view)
                 container.addSubview(topVC.view)
-                
+
                 let originalFrame = bottomVC.view.frame
                 var endFrame = originalFrame
                 var startFrame = originalFrame
-                
+
                 if presenting {
                     switch style {
                     case .SlideDown:

@@ -14,6 +14,8 @@ To run the example project, simply run `pod try transitional`. Alternatively, yo
 
 * Slide Down
 * Slide Up
+* Flip From Left
+* Flip From Right
 
 ```swift
    // Navigation Controller
