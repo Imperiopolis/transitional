@@ -1,6 +1,8 @@
 platform :ios, '8.0'
 use_frameworks!
 
-pod 'Reveal-iOS-SDK', configurations: ['Debug']
-pod 'Transitional', :path => '../'
-pod 'Swiftly', :head
+target :Example do
+    pod 'Reveal-iOS-SDK', configurations: ['Debug']
+    pod 'Transitional', path: '../'
+    pod 'Swiftly', git: 'https://github.com/imperiopolis/swiftly', branch: 'swift3'
+end

@@ -9,23 +9,29 @@
 import UIKit
 
 @objc public enum TransitionalAnimationStyle: Int, Equatable, CustomStringConvertible {
-    case SlideDown
-    case SlideUp
-    case FlipFromLeft
-    case FlipFromRight
-    case Custom
+    case slideDown
+    case slideUp
+    case flipFromLeft
+    case flipFromRight
+    case zoomIn
+    case zoomOut
+    case custom
 
     public var description: String {
         switch self {
-        case .SlideDown:
+        case .slideDown:
             return "Slide Down"
-        case .SlideUp:
+        case .slideUp:
             return "Slide Up"
-        case .FlipFromLeft:
+        case .flipFromLeft:
             return "Flip From Left"
-        case .FlipFromRight:
+        case .flipFromRight:
             return "Flip From Right"
-        case .Custom:
+        case .zoomIn:
+            return "Zoom In"
+        case .zoomOut:
+            return "Zoom Out"
+        case .custom:
             return "Custom"
         }
     }
@@ -34,15 +40,15 @@ import UIKit
 extension UIViewController: Transitional {
     
     /* Modal Transitions */
-    public func transitionalPresentation(viewController: UIViewController, style: TransitionalAnimationStyle) {
+    public func transitionalPresentation(_ viewController: UIViewController, style: TransitionalAnimationStyle) {
         transitionalPresentation(style, fromViewController: self, toViewController: viewController)
     }
     
-    public func transitionalCustomPresentation(viewController: UIViewController, duration: NSTimeInterval, animation: (transition: Transition) -> ()) {
+    public func transitionalCustomPresentation(_ viewController: UIViewController, duration: TimeInterval, animation: @escaping (_ transition: Transition) -> ()) {
         transitionalCustomPresentation(fromViewController: self, toViewController: viewController, duration: duration, animation: animation)
     }
     
-    public func transitionalDismissal(style: TransitionalAnimationStyle) {
+    public func transitionalDismissal(_ style: TransitionalAnimationStyle) {
         if let presentedViewController = presentedViewController {
             transitionalDismissal(fromViewController: presentedViewController, toViewController: self, style: style)
         } else if let presentingViewController = presentingViewController {
@@ -52,7 +58,7 @@ extension UIViewController: Transitional {
         }
     }
     
-    public func transitionalCustomDismissal(duration: NSTimeInterval, animation: (transition: Transition) -> ()) {
+    public func transitionalCustomDismissal(_ duration: TimeInterval, animation: @escaping (_ transition: Transition) -> ()) {
         if let presentedViewController = presentedViewController {
             transitionalCustomDismissal(fromViewController: presentedViewController, toViewController: self, duration: duration, animation: animation)
         } else if let presentingViewController = presentingViewController {
@@ -85,7 +91,7 @@ public protocol Transitional {
     - parameter style:          Animation style
 
     */
-    func transitionalPush(viewController: UIViewController, style: TransitionalAnimationStyle)
+    func transitionalPush(_ viewController: UIViewController, style: TransitionalAnimationStyle)
     
     /**
     Pop the top view controller from the navigation controller stack with a transitional animation.
@@ -93,7 +99,7 @@ public protocol Transitional {
     - parameter style: Animation style
     
     */
-    func transitionalPop(style: TransitionalAnimationStyle)
+    func transitionalPop(_ style: TransitionalAnimationStyle)
     
     /**
     Pop to a specific view controller in the navigation stack with a transitional animation.
@@ -103,7 +109,7 @@ public protocol Transitional {
     
     - returns: An array of view controllers that were popped to reach the target view controller.
     */
-    func transitionalPopToViewController(viewController: UIViewController, style: TransitionalAnimationStyle) -> [UIViewController]
+    func transitionalPopToViewController(_ viewController: UIViewController, style: TransitionalAnimationStyle) -> [UIViewController]
     
     /**
     Pop to the root view controller within the navigation stack with a transitional animation.
@@ -112,7 +118,7 @@ public protocol Transitional {
     
     - returns: An array of view controllers that were popped to reach the target view controller.
     */
-    func transitionalPopToRoot(style: TransitionalAnimationStyle) -> [UIViewController]
+    func transitionalPopToRoot(_ style: TransitionalAnimationStyle) -> [UIViewController]
     
     /* Modal Transitions */
     
@@ -124,7 +130,7 @@ public protocol Transitional {
     - parameter toVC:   The view controller to be presented
     
     */
-    func transitionalPresentation(style: TransitionalAnimationStyle, fromViewController fromVC: UIViewController, toViewController toVC: UIViewController)
+    func transitionalPresentation(_ style: TransitionalAnimationStyle, fromViewController fromVC: UIViewController, toViewController toVC: UIViewController)
     
     /**
     Present a view controller with a custom transitional animation.
@@ -134,7 +140,7 @@ public protocol Transitional {
     - parameter duration:  The duration for the custom animation
     - parameter animation: The custom animation to perform. Animations should occur within the containerView of the Transition object.
     */
-    func transitionalCustomPresentation(fromViewController fromVC: UIViewController, toViewController toVC: UIViewController, duration: NSTimeInterval, animation: (transition: Transition) -> ())
+    func transitionalCustomPresentation(fromViewController fromVC: UIViewController, toViewController toVC: UIViewController, duration: TimeInterval, animation: @escaping (_ transition: Transition) -> ())
     
     
     func transitionalDismissal(fromViewController fromVC: UIViewController, toViewController toVC: UIViewController, style: TransitionalAnimationStyle)
@@ -147,32 +153,32 @@ public protocol Transitional {
      - parameter duration:  The duration for the custom animation
      - parameter animation: The custom animation to perform. Animations should occur within the containerView of the Transition object.
      */
-    func transitionalCustomDismissal(fromViewController fromVC: UIViewController, toViewController toVC: UIViewController, duration: NSTimeInterval, animation: (transition: Transition) -> ())
+    func transitionalCustomDismissal(fromViewController fromVC: UIViewController, toViewController toVC: UIViewController, duration: TimeInterval, animation: @escaping (_ transition: Transition) -> ())
 }
 
 public extension Transitional {
     
-    func transitionalPush(viewController: UIViewController, style: TransitionalAnimationStyle) {
-        if let navController = transitionalNavigationController(), fromVC = navController.topViewController {
+    func transitionalPush(_ viewController: UIViewController, style: TransitionalAnimationStyle) {
+        if let navController = transitionalNavigationController(), let fromVC = navController.topViewController {
             let transition = Transition(self, style: style, fromVC: fromVC, toVC: viewController)
             transition.navController = navController
             transition.push()
         }
     }
     
-    func transitionalPop(style: TransitionalAnimationStyle) {
-        if let navController = transitionalNavigationController() where navController.viewControllers.count > 1 {
+    func transitionalPop(_ style: TransitionalAnimationStyle) {
+        if let navController = transitionalNavigationController() , navController.viewControllers.count > 1 {
             let count = navController.viewControllers.count
             let fromVC = navController.viewControllers[count - 1]
             let toVC = navController.viewControllers[count - 2]
             let transition = Transition(self, style: style, fromVC: fromVC, toVC: toVC)
             transition.navController = navController
-            transition.pop()
+            _ = transition.pop()
         }
     }
     
-    func transitionalPopToViewController(viewController: UIViewController, style: TransitionalAnimationStyle) -> [UIViewController] {
-        if let navController = transitionalNavigationController() where navController.viewControllers.count > 1 {
+    func transitionalPopToViewController(_ viewController: UIViewController, style: TransitionalAnimationStyle) -> [UIViewController] {
+        if let navController = transitionalNavigationController() , navController.viewControllers.count > 1 {
             let count = navController.viewControllers.count
             let fromVC = navController.viewControllers[count - 1]
             let toVC = viewController
@@ -184,8 +190,8 @@ public extension Transitional {
         return []
     }
     
-    func transitionalPopToRoot(style: TransitionalAnimationStyle) -> [UIViewController] {
-        if let navController = transitionalNavigationController() where navController.viewControllers.count > 1 {
+    func transitionalPopToRoot(_ style: TransitionalAnimationStyle) -> [UIViewController] {
+        if let navController = transitionalNavigationController() , navController.viewControllers.count > 1 {
             let count = navController.viewControllers.count
             let fromVC = navController.viewControllers[count - 1]
             let toVC = navController.viewControllers[0]
@@ -197,18 +203,18 @@ public extension Transitional {
         return []
     }
     
-    func transitionalCustomPresentation(fromViewController fromVC: UIViewController, toViewController toVC: UIViewController, duration: NSTimeInterval, animation: (transition: Transition) -> ()) {
-        let transition = Transition(self, style: .Custom, fromVC: fromVC, toVC: toVC, duration: duration, customAnimation: animation)
+    func transitionalCustomPresentation(fromViewController fromVC: UIViewController, toViewController toVC: UIViewController, duration: TimeInterval, animation: @escaping (_ transition: Transition) -> ()) {
+        let transition = Transition(self, style: .custom, fromVC: fromVC, toVC: toVC, duration: duration, customAnimation: animation)
         transition.present()
     }
     
-    func transitionalPresentation(style: TransitionalAnimationStyle, fromViewController fromVC: UIViewController, toViewController toVC: UIViewController) {
+    func transitionalPresentation(_ style: TransitionalAnimationStyle, fromViewController fromVC: UIViewController, toViewController toVC: UIViewController) {
         let transition = Transition(self, style: style, fromVC: fromVC, toVC: toVC)
         transition.present()
     }
     
-    func transitionalCustomDismissal(fromViewController fromVC: UIViewController, toViewController toVC: UIViewController, duration: NSTimeInterval, animation: (transition: Transition) -> ()) {
-        let transition = Transition(self, style: .Custom, fromVC: fromVC, toVC: toVC, duration: duration, customAnimation: animation)
+    func transitionalCustomDismissal(fromViewController fromVC: UIViewController, toViewController toVC: UIViewController, duration: TimeInterval, animation: @escaping (_ transition: Transition) -> ()) {
+        let transition = Transition(self, style: .custom, fromVC: fromVC, toVC: toVC, duration: duration, customAnimation: animation)
         transition.dismiss()
     }
     
@@ -219,34 +225,34 @@ public extension Transitional {
     
 }
 
-public class Transition: NSObject {
+open class Transition: NSObject {
 
     // MARK: Public
     
     let identifier: String
     let style: TransitionalAnimationStyle
-    public let duration: NSTimeInterval
+    open let duration: TimeInterval
     
-    public private(set) var presenting: Bool = false
+    open fileprivate(set) var presenting: Bool = false
     
-    public private(set) weak var fromViewController: UIViewController?
-    public private(set) weak var toViewController: UIViewController?
-    public private(set) weak var navController: UINavigationController?
+    open fileprivate(set) weak var fromViewController: UIViewController?
+    open fileprivate(set) weak var toViewController: UIViewController?
+    open fileprivate(set) weak var navController: UINavigationController?
     
-    public var bottomViewController: UIViewController? {
+    open var bottomViewController: UIViewController? {
         return presenting ? fromViewController : toViewController
     }
     
-    public var topViewController: UIViewController? {
+    open var topViewController: UIViewController? {
         return presenting ? toViewController : fromViewController
     }
     
-    public var containerView: UIView? {
-        return context?.containerView()
+    open var containerView: UIView? {
+        return context?.containerView
     }
     
-    public func completeTransition() -> Bool {
-        let cancelled = self.context?.transitionWasCancelled() ?? true
+    open func completeTransition() -> Bool {
+        let cancelled = self.context?.transitionWasCancelled ?? true
         
         self.context?.completeTransition(!cancelled)
         
@@ -255,67 +261,67 @@ public class Transition: NSObject {
     
     // MARK: Private
     
-    private let transitional: Transitional
-    private let customAnimation: ((transition: Transition) -> ())?
-    private var context: UIViewControllerContextTransitioning?
-    private var originalDelegate: AnyObject?
+    fileprivate let transitional: Transitional
+    fileprivate let customAnimation: ((_ transition: Transition) -> ())?
+    fileprivate var context: UIViewControllerContextTransitioning?
+    fileprivate var originalDelegate: AnyObject?
     
-    private convenience init(_ t: Transitional, style s: TransitionalAnimationStyle, fromVC: UIViewController, toVC: UIViewController) {
+    fileprivate convenience init(_ t: Transitional, style s: TransitionalAnimationStyle, fromVC: UIViewController, toVC: UIViewController) {
         self.init(t, style: s, fromVC: fromVC, toVC: toVC, duration: 0.35, customAnimation: nil)
     }
     
-    private init(_ t: Transitional, style s: TransitionalAnimationStyle, fromVC: UIViewController, toVC: UIViewController, duration d: NSTimeInterval, customAnimation ca: ((transition: Transition) -> ())?) {
+    fileprivate init(_ t: Transitional, style s: TransitionalAnimationStyle, fromVC: UIViewController, toVC: UIViewController, duration d: TimeInterval, customAnimation ca: ((_ transition: Transition) -> ())?) {
         transitional = t
         style = s
         fromViewController = fromVC
         toViewController = toVC
-        identifier = NSUUID().UUIDString
+        identifier = UUID().uuidString
         customAnimation = ca
         duration = d
     }
     
-    private func present() {
-        if let fromVC = fromViewController, toVC = toViewController {
+    fileprivate func present() {
+        if let fromVC = fromViewController, let toVC = toViewController {
             presenting = true
             
             let originalDelegate = toVC.transitioningDelegate
             
             toVC.transitioningDelegate = self
             
-            fromVC.presentViewController(toVC, animated: true) {
+            fromVC.present(toVC, animated: true) {
                 toVC.transitioningDelegate = originalDelegate
             }
         }
     }
     
-    private func dismiss() {
+    fileprivate func dismiss() {
         if let fromVC = fromViewController {
             presenting = false
             
             let originalDelegate = fromVC.transitioningDelegate
-            let originalParentDelegate = fromVC.parentViewController?.transitioningDelegate
+            let originalParentDelegate = fromVC.parent?.transitioningDelegate
             
             fromVC.transitioningDelegate = self
-            fromVC.parentViewController?.transitioningDelegate = self
+            fromVC.parent?.transitioningDelegate = self
             
-            fromVC.dismissViewControllerAnimated(true) {
+            fromVC.dismiss(animated: true) {
                 fromVC.transitioningDelegate = originalDelegate
-                fromVC.parentViewController?.transitioningDelegate = originalParentDelegate
+                fromVC.parent?.transitioningDelegate = originalParentDelegate
             }
         }
     }
     
-    private func push() {
-        if let navController = navController, toVC = toViewController {
+    fileprivate func push() {
+        if let navController = navController, let toVC = toViewController {
             originalDelegate = navController.delegate
             navController.delegate = self
             navController.pushViewController(toVC, animated: true)
         }
     }
     
-    private func pop() -> [UIViewController] {
+    fileprivate func pop() -> [UIViewController] {
         
-        if let navController = navController, toVC = toViewController {
+        if let navController = navController, let toVC = toViewController {
             originalDelegate = navController.delegate
             navController.delegate = self
             return navController.popToViewController(toVC, animated: true) ?? []
@@ -324,27 +330,77 @@ public class Transition: NSObject {
         return []
     }
     
-    private func animation() {
+    fileprivate func animation() {
         switch style {
-        case .SlideDown:
+        case .slideDown:
             fallthrough
-        case .SlideUp:
+        case .slideUp:
             slide()
-        case .FlipFromLeft:
+        case .flipFromLeft:
             fallthrough
-        case .FlipFromRight:
+        case .flipFromRight:
             flip()
+        case .zoomIn:
+            fallthrough
+        case .zoomOut:
+            zoom()
         default:
             break
         }
     }
 
-    private func flip() {
+    fileprivate func zoom() {
         if let fromVC = fromViewController,
-            toVC = toViewController,
-            bottomVC = bottomViewController,
-            topVC = topViewController,
-            container = containerView {
+            let toVC = toViewController,
+            let container = containerView {
+
+                container.addSubview(fromVC.view)
+                container.addSubview(toVC.view)
+
+                let startTransform: CGAffineTransform
+                let endTransform: CGAffineTransform
+
+                if style == .zoomIn {
+                    startTransform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+                    endTransform = CGAffineTransform(scaleX: 1.65, y: 1.65)
+                } else {
+                    startTransform = CGAffineTransform(scaleX: 1.65, y: 1.65)
+                    endTransform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+                }
+
+                toVC.view.transform = startTransform
+                toVC.view.alpha = 0
+
+                UIView.animate(withDuration: duration, animations: {
+                    toVC.view.transform = CGAffineTransform(scaleX: 1, y: 1)
+                    fromVC.view.transform = endTransform
+                    toVC.view.alpha = 1
+                    fromVC.view.alpha = 0
+                    }, completion: { [unowned self] _ in
+                        let cancelled = self.context?.transitionWasCancelled ?? true
+
+                        toVC.view.transform = CGAffineTransform(scaleX: 1, y: 1)
+                        toVC.view.alpha = 1
+                        fromVC.view.transform = CGAffineTransform(scaleX: 1, y: 1)
+                        fromVC.view.alpha = 1
+
+                        if cancelled {
+                            toVC.view.removeFromSuperview()
+                        } else {
+                            fromVC.view.removeFromSuperview()
+                        }
+
+                        self.context?.completeTransition(!cancelled)
+                }) 
+        }
+    }
+
+    fileprivate func flip() {
+        if let fromVC = fromViewController,
+            let toVC = toViewController,
+            let bottomVC = bottomViewController,
+            let topVC = topViewController,
+            let container = containerView {
 
                 container.addSubview(bottomVC.view)
 
@@ -361,17 +417,17 @@ public class Transition: NSObject {
                 let options: UIViewAnimationOptions
 
                 switch style {
-                case .FlipFromRight:
-                    options = .TransitionFlipFromRight
-                case .FlipFromLeft:
-                    options = .TransitionFlipFromLeft
+                case .flipFromRight:
+                    options = .transitionFlipFromRight
+                case .flipFromLeft:
+                    options = .transitionFlipFromLeft
                 default:
                     fatalError("Only flip styles support this flip animation. This path should never be hit.")
                 }
 
-                UIView.transitionFromView(fromVC.view, toView: toVC.view, duration: duration, options: options) { _ in
+                UIView.transition(from: fromVC.view, to: toVC.view, duration: duration, options: options) { _ in
 
-                    let cancelled = self.context?.transitionWasCancelled() ?? true
+                    let cancelled = self.context?.transitionWasCancelled ?? true
 
                     if cancelled {
                         toVC.view.removeFromSuperview()
@@ -384,12 +440,12 @@ public class Transition: NSObject {
         }
     }
 
-    private func slide() {
+    fileprivate func slide() {
         if let fromVC = fromViewController,
-            toVC = toViewController,
-            bottomVC = bottomViewController,
-            topVC = topViewController,
-            container = containerView {
+            let toVC = toViewController,
+            let bottomVC = bottomViewController,
+            let topVC = topViewController,
+            let container = containerView {
 
                 container.addSubview(bottomVC.view)
                 container.addSubview(topVC.view)
@@ -400,18 +456,18 @@ public class Transition: NSObject {
 
                 if presenting {
                     switch style {
-                    case .SlideDown:
+                    case .slideDown:
                         startFrame.origin.y -= startFrame.size.height
-                    case .SlideUp:
+                    case .slideUp:
                         startFrame.origin.y += startFrame.size.height
                     default:
                         break
                     }
                 } else {
                     switch style {
-                    case .SlideDown:
+                    case .slideDown:
                         endFrame.origin.y += endFrame.size.height
-                    case .SlideUp:
+                    case .slideUp:
                         endFrame.origin.y -= endFrame.size.height
                     default:
                         break
@@ -421,12 +477,12 @@ public class Transition: NSObject {
                 
                 topVC.view.frame = startFrame
                 
-                UIView.animateWithDuration(duration, animations: {
+                UIView.animate(withDuration: duration, animations: {
                     topVC.view.frame = endFrame
-                    }) { [unowned self] _ in
+                    }, completion: { [unowned self] _ in
                         topVC.view.frame = originalFrame
                         
-                        let cancelled = self.context?.transitionWasCancelled() ?? true
+                        let cancelled = self.context?.transitionWasCancelled ?? true
                         
                         if cancelled {
                             toVC.view.removeFromSuperview()
@@ -435,7 +491,7 @@ public class Transition: NSObject {
                         }
                         
                         self.context?.completeTransition(!cancelled)
-                }
+                }) 
                 
         }
     }
@@ -443,22 +499,22 @@ public class Transition: NSObject {
 }
 
 extension Transition: UINavigationControllerDelegate {
-    public func navigationController(navigationController: UINavigationController, animationControllerForOperation operation: UINavigationControllerOperation, fromViewController fromVC: UIViewController, toViewController toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        presenting = operation == .Push
+    public func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationControllerOperation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        presenting = operation == .push
         return self
     }
     
-    public func navigationController(navigationController: UINavigationController, didShowViewController viewController: UIViewController, animated: Bool) {
+    public func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
         navigationController.delegate = originalDelegate as? UINavigationControllerDelegate
     }
 }
 
 extension Transition: UIViewControllerTransitioningDelegate {
-    public func animationControllerForPresentedController(presented: UIViewController, presentingController presenting: UIViewController, sourceController source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return self
     }
     
-    public func animationControllerForDismissedController(dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return self
     }
     
@@ -473,16 +529,16 @@ extension Transition: UIViewControllerTransitioningDelegate {
 
 extension Transition: UIViewControllerAnimatedTransitioning {
     
-    public func transitionDuration(transitionContext: UIViewControllerContextTransitioning?) -> NSTimeInterval {
+    public func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return duration
     }
     
-    public func animateTransition(transitionContext: UIViewControllerContextTransitioning) {
+    public func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         context = transitionContext
         
         switch style {
-        case .Custom:
-            customAnimation?(transition: self)
+        case .custom:
+            customAnimation?(self)
         default:
             animation()
             

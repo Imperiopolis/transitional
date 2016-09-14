@@ -8,6 +8,26 @@
 
 import UIKit
 import Transitional
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l > r
+  default:
+    return rhs < lhs
+  }
+}
+
 
 extension UIColor {
     class func randomColor() -> UIColor {
@@ -20,20 +40,20 @@ extension UIColor {
 }
 
 private enum SectionType: Int, CustomStringConvertible {
-    case Present
-    case Dismiss
-    case Push
-    case Pop
+    case present
+    case dismiss
+    case push
+    case pop
     
     var description: String {
         switch self {
-        case .Present:
+        case .present:
             return "Present"
-        case .Dismiss:
+        case .dismiss:
             return "Dismiss"
-        case .Push:
+        case .push:
             return "Push"
-        case .Pop:
+        case .pop:
             return "Pop"
         }
     }
@@ -41,73 +61,73 @@ private enum SectionType: Int, CustomStringConvertible {
 
 class ExampleViewController: UITableViewController {
     
-    private var sections = [SectionType]()
+    fileprivate var sections = [SectionType]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .randomColor()
         
-        tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         if sections.count == 0 {
             if navigationController?.viewControllers.count > 1 {
-                sections.append(.Pop)
+                sections.append(.pop)
             }
             
-            sections.append(.Push)
+            sections.append(.push)
             
             if presentingViewController != nil {
-                sections.append(.Dismiss)
+                sections.append(.dismiss)
             }
             
-            sections.append(.Present)
+            sections.append(.present)
             
             tableView.reloadData()
         }
     }
     
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         return sections.count
     }
     
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 4
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 6
     }
     
-    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return sections[section].description
     }
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath)
-        cell.textLabel?.text = TransitionalAnimationStyle(rawValue: indexPath.row)?.description
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        cell.textLabel?.text = TransitionalAnimationStyle(rawValue: (indexPath as NSIndexPath).row)?.description
         return cell
     }
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let section = sections[indexPath.section]
-        let style = TransitionalAnimationStyle(rawValue: indexPath.row)!
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let section = sections[(indexPath as NSIndexPath).section]
+        let style = TransitionalAnimationStyle(rawValue: (indexPath as NSIndexPath).row)!
         let toVC = ExampleViewController()
         
         switch section {
-        case .Present:
+        case .present:
             transitionalPresentation(UINavigationController(rootViewController: toVC), style: style)
-        case .Dismiss:
+        case .dismiss:
             transitionalDismissal(style)
-        case .Push:
+        case .push:
             transitionalPush(toVC, style: style)
-        case .Pop:
+        case .pop:
             transitionalPop(style)
         }
     }
     
 }
 
-private func dispatchAfter(time: NSTimeInterval, block: dispatch_block_t) {
-    let time = dispatch_time(DISPATCH_TIME_NOW, Int64(time * Double(NSEC_PER_SEC)))
-    dispatch_after(time, dispatch_get_main_queue(), block)
+private func dispatchAfter(_ time: TimeInterval, block: @escaping ()->()) {
+    let time = DispatchTime.now() + Double(Int64(time * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
+    DispatchQueue.main.asyncAfter(deadline: time, execute: block)
 }

@@ -1,20 +1,30 @@
 PODS:
   - Reveal-iOS-SDK (1.6.2)
-  - Swiftly (HEAD based on 0.0.2)
-  - Transitional (0.0.1)
+  - Swiftly (0.1.0)
+  - Transitional (0.0.2)
 
 DEPENDENCIES:
   - Reveal-iOS-SDK
-  - Swiftly (HEAD)
+  - Swiftly (from `https://github.com/imperiopolis/swiftly`, branch `swift3`)
   - Transitional (from `../`)
 
 EXTERNAL SOURCES:
+  Swiftly:
+    :branch: swift3
+    :git: https://github.com/imperiopolis/swiftly
   Transitional:
-    :path: ../
+    :path: "../"
+
+CHECKOUT OPTIONS:
+  Swiftly:
+    :commit: 4452079fb262206411edde62c4dce4216c99f712
+    :git: https://github.com/imperiopolis/swiftly
 
 SPEC CHECKSUMS:
   Reveal-iOS-SDK: e2250b3c155bcfac53ae223ddc1f76d08f206c33
-  Swiftly: 1439ad8422bccfd3e0fd3ce0139126aa7837a9aa
-  Transitional: 331180680b233d2a9e08ffab9a2f12f13ee85d71
+  Swiftly: 92568c3f59bf031019cf83fb07b17d758f0bb137
+  Transitional: 6164fe0b8091bd9775de44a5cbea177e6108ae43
 
-COCOAPODS: 0.39.0
+PODFILE CHECKSUM: ea9a929687b5cab4a80d961a46e259307ee28114
+
+COCOAPODS: 1.1.0.rc.2
