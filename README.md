@@ -16,6 +16,8 @@ To run the example project, simply run `pod try transitional`. Alternatively, yo
 * Slide Up
 * Flip From Left
 * Flip From Right
+* Zoom In
+* Zoom Out
 
 ```swift
    // Navigation Controller
@@ -83,6 +85,9 @@ it, simply add the following line to your Podfile:
 ```ruby
 pod "Transitional"
 ```
+### Swift Version
+
+Transitional 0.1.0 and later require Swift 3.0. For older versions of Swift, please use the Transitional 0.0.2 build.
 
 ## Documentation
 
