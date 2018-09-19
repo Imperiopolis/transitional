@@ -87,7 +87,7 @@ pod "Transitional"
 ```
 ### Swift Version
 
-Transitional 0.1.0 and later require Swift 3.0. For older versions of Swift, please use the Transitional 0.0.2 build.
+Transitional 0.2.0 and later require Swift 4.2. For older versions of Swift, please use the Transitional 0.1.0 build.
 
 ## Documentation
 

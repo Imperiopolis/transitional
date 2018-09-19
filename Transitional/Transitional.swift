@@ -231,7 +231,7 @@ open class Transition: NSObject {
     
     let identifier: String
     let style: TransitionalAnimationStyle
-    open let duration: TimeInterval
+    public let duration: TimeInterval
     
     open fileprivate(set) var presenting: Bool = false
     
@@ -414,7 +414,7 @@ open class Transition: NSObject {
 
                 container.addSubview(topVC.view)
 
-                let options: UIViewAnimationOptions
+                let options: UIView.AnimationOptions
 
                 switch style {
                 case .flipFromRight:
@@ -499,7 +499,7 @@ open class Transition: NSObject {
 }
 
 extension Transition: UINavigationControllerDelegate {
-    public func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationControllerOperation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    public func navigationController(_ navigationController: UINavigationController, animationControllerFor operation: UINavigationController.Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         presenting = operation == .push
         return self
     }
